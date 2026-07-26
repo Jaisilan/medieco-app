@@ -28,6 +28,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate staging secrets
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          test -n "$VITE_SUPABASE_URL" || { echo "VITE_SUPABASE_URL is missing"; exit 1; }
+          test -n "$VITE_SUPABASE_ANON_KEY" || { echo "VITE_SUPABASE_ANON_KEY is missing"; exit 1; }
+          case "$VITE_SUPABASE_URL" in
+            https://*.supabase.co) ;;
+            *) echo "VITE_SUPABASE_URL must look like https://PROJECT_REF.supabase.co"; exit 1 ;;
+          esac
+
       - name: Build staging app
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -36,6 +48,13 @@ jobs:
           VITE_APP_ENV: staging
           VITE_APP_URL: https://magenta-alpaca-240997.hostingersite.com
         run: npm run build
+
+      - name: Verify Supabase configuration was embedded
+        run: |
+          grep -Rqs "supabase.co" dist/assets || {
+            echo "Supabase URL was not embedded in the production bundle"
+            exit 1
+          }
 
       - name: Add Hostinger routing rules
         run: cp deployment/hostinger/.htaccess dist/.htaccess
