@@ -56,8 +56,22 @@ jobs:
             exit 1
           }
 
-      - name: Add Hostinger routing rules
-        run: cp deployment/hostinger/.htaccess dist/.htaccess
+      - name: Add deployment marker and Hostinger routing rules
+        run: |
+          printf '{"commit":"%s","deployed_at":"%s"}\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > dist/version.json
+          cp deployment/hostinger/.htaccess dist/.htaccess
+
+      - name: Clean previous staging build
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOSTINGER_SFTP_SERVER }}
+          username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
+          port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          script: |
+            TARGET='${{ secrets.HOSTINGER_SFTP_DIRECTORY }}'
+            rm -rf "$TARGET/assets"
+            rm -f "$TARGET/index.html" "$TARGET/version.json" "$TARGET/.htaccess"
 
       - name: Deploy to Hostinger over SSH
         uses: appleboy/scp-action@v1
