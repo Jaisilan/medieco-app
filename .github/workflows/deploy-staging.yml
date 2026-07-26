@@ -107,10 +107,28 @@ jobs:
               exit 1
             }
 
+      - name: Diagnose Hostinger document roots
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOSTINGER_SFTP_SERVER }}
+          username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
+          port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          script: |
+            echo "SSH home: $HOME"
+            echo "Working directory: $(pwd)"
+            echo "Candidate version.json files:"
+            find "$HOME" -maxdepth 7 -type f -name version.json 2>/dev/null | while read -r FILE; do
+              echo "--- $FILE"
+              cat "$FILE" 2>/dev/null || true
+            done
+            echo "Candidate public_html directories:"
+            find "$HOME" -maxdepth 6 -type d -name public_html 2>/dev/null | sort
+
       - name: Verify live staging URL
         run: |
           sleep 5
-          LIVE_VERSION="$(curl -fsSL --retry 3 --retry-delay 2 'https://magenta-alpaca-240997.hostingersite.com/version.json?commit=${GITHUB_SHA}')"
+          LIVE_VERSION="$(curl -fsSL --retry 3 --retry-delay 2 "https://magenta-alpaca-240997.hostingersite.com/version.json?commit=${GITHUB_SHA}")"
           echo "$LIVE_VERSION"
           echo "$LIVE_VERSION" | grep -q "$GITHUB_SHA" || {
             echo "Live domain is not serving files from HOSTINGER_SFTP_DIRECTORY"
