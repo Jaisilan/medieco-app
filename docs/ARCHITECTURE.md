@@ -18,5 +18,5 @@ Both surfaces share Supabase authentication, database services, design tokens an
 - 1280–1440 px: desktop
 - 1920 px: large desktop
 
-## Payment boundary
-The Vue client must not call CHIP with private credentials. Checkout creation, price validation and CHIP purchase creation belong in Supabase Edge Functions. CHIP webhooks are the source of truth for paid status.
+## Staging deployment
+The `develop` branch is automatically built and deployed to the Hostinger staging site. Each deployment replaces the previous application bundle and writes the Git commit SHA to `version.json` for verification.
