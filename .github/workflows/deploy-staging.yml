@@ -70,6 +70,7 @@ jobs:
           port: ${{ secrets.HOSTINGER_SFTP_PORT }}
           script: |
             TARGET='${{ secrets.HOSTINGER_SFTP_DIRECTORY }}'
+            test -d "$TARGET" || { echo "Target directory does not exist"; exit 1; }
             rm -rf "$TARGET/assets"
             rm -f "$TARGET/index.html" "$TARGET/version.json" "$TARGET/.htaccess"
 
@@ -84,3 +85,34 @@ jobs:
           target: ${{ secrets.HOSTINGER_SFTP_DIRECTORY }}
           strip_components: 1
           overwrite: true
+
+      - name: Verify files on Hostinger server
+        uses: appleboy/ssh-action@v1
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.HOSTINGER_SFTP_SERVER }}
+          username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
+          port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          envs: EXPECTED_SHA
+          script: |
+            TARGET='${{ secrets.HOSTINGER_SFTP_DIRECTORY }}'
+            echo "Checking deployed files in configured target"
+            test -f "$TARGET/index.html" || { echo "index.html missing from target"; exit 1; }
+            test -f "$TARGET/version.json" || { echo "version.json missing from target"; exit 1; }
+            cat "$TARGET/version.json"
+            grep -q "$EXPECTED_SHA" "$TARGET/version.json" || {
+              echo "Configured target does not contain the current deployment marker"
+              exit 1
+            }
+
+      - name: Verify live staging URL
+        run: |
+          sleep 5
+          LIVE_VERSION="$(curl -fsSL --retry 3 --retry-delay 2 'https://magenta-alpaca-240997.hostingersite.com/version.json?commit=${GITHUB_SHA}')"
+          echo "$LIVE_VERSION"
+          echo "$LIVE_VERSION" | grep -q "$GITHUB_SHA" || {
+            echo "Live domain is not serving files from HOSTINGER_SFTP_DIRECTORY"
+            exit 1
+          }
