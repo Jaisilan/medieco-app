@@ -39,14 +39,14 @@ jobs:
       - name: Add Hostinger routing rules
         run: cp deployment/hostinger/.htaccess dist/.htaccess
 
-      - name: Deploy to Hostinger
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      - name: Deploy to Hostinger over SSH
+        uses: appleboy/scp-action@v1
         with:
-          server: ${{ secrets.HOSTINGER_FTP_SERVER }}
-          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
-          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          local-dir: ./dist/
-          server-dir: ${{ secrets.HOSTINGER_FTP_DIRECTORY }}
-          dangerous-clean-slate: false
+          host: ${{ secrets.HOSTINGER_SFTP_SERVER }}
+          username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
+          port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          source: "dist"
+          target: ${{ secrets.HOSTINGER_SFTP_DIRECTORY }}
+          strip_components: 1
+          overwrite: true
