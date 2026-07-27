@@ -13,7 +13,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout develop branch
@@ -68,6 +68,8 @@ jobs:
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
           port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          timeout: 120s
+          command_timeout: 10m
           script: |
             TARGET='${{ secrets.HOSTINGER_SFTP_DIRECTORY }}'
             test -d "$TARGET" || { echo "Target directory does not exist"; exit 1; }
@@ -81,6 +83,8 @@ jobs:
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
           port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          timeout: 120s
+          command_timeout: 10m
           source: "dist"
           target: ${{ secrets.HOSTINGER_SFTP_DIRECTORY }}
           strip_components: 1
@@ -95,6 +99,8 @@ jobs:
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
           port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          timeout: 120s
+          command_timeout: 10m
           envs: EXPECTED_SHA
           script: |
             TARGET='${{ secrets.HOSTINGER_SFTP_DIRECTORY }}'
@@ -114,6 +120,8 @@ jobs:
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
           port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          timeout: 120s
+          command_timeout: 10m
           script: |
             echo "SSH home: $HOME"
             echo "Working directory: $(pwd)"
