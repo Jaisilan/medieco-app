@@ -239,8 +239,9 @@ function comingSoon(moduleName = 'Feature') {
 }
 
 .hero-panel {
+  position: relative;
   width: min(1180px, calc(100% - 32px));
-  margin: 4px auto 28px;
+  margin: 4px auto 22px;
   border-radius: clamp(26px, 4vw, 38px);
   padding: clamp(24px, 5vw, 52px);
   background:
@@ -317,11 +318,65 @@ function comingSoon(moduleName = 'Feature') {
 
 @media (max-width: 640px) {
   .app-header, .hero-panel, .section-shell { width: min(100% - 24px, 1180px); }
-  .hero-panel { grid-template-columns: 1fr; padding: 24px; }
-  .date-card { justify-self: start; text-align: left; min-width: 0; }
-  .hero-copy h1 { font-size: 38px; }
+  .app-header { padding: 14px 0 10px; }
+  .profile-avatar { width: 44px; height: 44px; border-radius: 14px; }
+  .profile-button strong { font-size: 16px; }
+  .icon-button { width: 40px; height: 40px; }
+
+  .hero-panel {
+    display: block;
+    min-height: 0;
+    margin-bottom: 18px;
+    padding: 20px;
+    padding-top: 64px;
+    border-radius: 28px;
+  }
+
+  .hero-copy { max-width: none; }
+  .eyebrow { padding: 6px 9px; font-size: 10px; }
+  .hero-copy h1 {
+    max-width: 88%;
+    margin: 12px 0 8px;
+    font-size: clamp(29px, 9vw, 36px);
+    line-height: 1.02;
+  }
+  .hero-copy p {
+    max-width: 94%;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .hero-actions button {
+    min-height: 46px;
+    padding: 11px 12px;
+    font-size: 14px;
+  }
+
+  .date-card {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    min-width: 0;
+    padding: 8px 10px;
+    border-radius: 14px;
+    text-align: right;
+  }
+  .date-card small { display: none; }
+  .date-card strong { margin: 0; font-size: 14px; line-height: 1.1; }
+  .date-card span { margin-top: 3px; font-size: 10px; }
+
+  .section-shell { margin-bottom: 22px; }
+  .section-heading { margin-bottom: 10px; }
+  .section-heading h2 { font-size: 23px; }
   .service-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .service-card { min-height: 146px; display: block; padding: 16px; }
+  .service-card { min-height: 136px; display: block; padding: 15px; border-radius: 22px; }
+  .service-icon { width: 40px; height: 40px; font-size: 20px; }
+  .service-card strong { font-size: 16px; }
   .service-card .arrow { float: right; }
   .future-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .admin-banner { align-items: stretch; flex-direction: column; }
