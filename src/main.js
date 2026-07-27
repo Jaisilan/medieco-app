@@ -4,23 +4,29 @@ import router from './router'
 import { loadUser } from './stores/auth'
 import './assets/styles/base.css'
 
-// Prevent pinch zoom
+function isUserAppRoute() {
+  return !window.location.pathname.startsWith('/admin')
+}
+
+// Preserve the native-app feel on the customer app by preventing accidental
+// pinch and double-tap zoom. The administration portal remains unaffected.
 document.addEventListener(
   'touchmove',
   (event) => {
-    if (event.touches.length > 1) {
+    if (isUserAppRoute() && event.touches.length > 1) {
       event.preventDefault()
     }
   },
   { passive: false }
 )
 
-// Prevent double-tap zoom
 let lastTouchEnd = 0
 
 document.addEventListener(
   'touchend',
   (event) => {
+    if (!isUserAppRoute()) return
+
     const now = Date.now()
 
     if (now - lastTouchEnd <= 300) {
@@ -32,30 +38,17 @@ document.addEventListener(
   { passive: false }
 )
 
-// Extra iOS Safari gesture prevention
-document.addEventListener(
-  'gesturestart',
-  (event) => {
-    event.preventDefault()
-  },
-  { passive: false }
-)
-
-document.addEventListener(
-  'gesturechange',
-  (event) => {
-    event.preventDefault()
-  },
-  { passive: false }
-)
-
-document.addEventListener(
-  'gestureend',
-  (event) => {
-    event.preventDefault()
-  },
-  { passive: false }
-)
+for (const gestureEvent of ['gesturestart', 'gesturechange', 'gestureend']) {
+  document.addEventListener(
+    gestureEvent,
+    (event) => {
+      if (isUserAppRoute()) {
+        event.preventDefault()
+      }
+    },
+    { passive: false }
+  )
+}
 
 loadUser()
 
