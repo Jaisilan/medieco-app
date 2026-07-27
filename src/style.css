@@ -116,6 +116,13 @@ a {
   box-shadow: 0 10px 20px rgba(232, 121, 107, 0.18);
 }
 
+/* White primary action inside the Bloom Care hero needs a dark readable label. */
+body .hero-panel .hero-actions .primary-btn {
+  background: #ffffff;
+  color: #7a2433 !important;
+  text-shadow: none;
+}
+
 .secondary-btn {
   border: 1px solid var(--rose);
   background: white;
